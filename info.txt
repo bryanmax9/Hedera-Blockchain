@@ -1,0 +1,90 @@
+HEDERA
+HEX Encoded Private Key = 0xa20750d9be1abe47cecb572863b3ce7b641511d2fa92071e425014c67e61a155
+DER Encoded Private Key = 302e020100300506032b657004220420a20750d9be1abe47cecb572863b3ce7b641511d2fa92071e425014c67e61a155
+DER Encoded Public Key = 302a300506032b657003210036b8766c8af48808f1ab87b3d45d74b8b33d3ec13b8ae51e60e15bd9564aa342
+Account ID = 0.0.2243066
+
+
+
+Initialize a node.js project in this new directory by running the following command:
+  npm init -y
+
+
+
+Next, we’re going to install the JavaScript SDK, the dotenv dependency, and create index.js & .env files. 
+If you’re wondering what dotenv is, it’s an NPM package that allows us to create environment variables within our project. We can reference these variables in our code so that we’re not hard-coding our account information into any of our project files. This comes in handy when we’re pushing code to a public GitHub repository and allows us to hide our sensitive information. 
+
+  npm install --save @hashgraph/sdk
+
+  npm install dotenv
+
+  touch index.js .env
+
+the command "touch index.js .env" will create a file named "index.js" and ".env"
+
+
+
+Setting up Your .env File
+
+Next, let’s create those environment variables I was talking about earlier. Click into your .env file and plug in the following code: 
+
+MY_ACCOUNT_ID=ENTER TESTNET ACCOUNT ID 
+MY_PRIVATE_KEY=DER ENCODED PRIVATE KEY
+
+Note: when you’re plugging in your Account ID and your DER Encoded Private Key, don’t leave any spaces or use any quotation marks
+
+Testing Your Environment Variables
+
+Now let’s test out those environment variables using some JavaScript. Head over to your index.js file and plug in the following code: 
+
+   //Imports the dotenv dependency and environment variables into your index.js file
+
+require("dotenv").config();
+
+   //Imports the hashgraph/sdk dependency along with some built in functionality that will be used later on in the tutorial
+
+const { Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar, TransferTransaction } = require("@hashgraph/sdk");
+
+   //Important to note that you have to write async functions when leveraging the Hedera network
+
+async function main() {
+
+    //Grabs your Hedera testnet account ID and private key from your .env file and stores them to new variables
+
+    const myAccountId = process.env.MY_ACCOUNT_ID;
+    const myPrivateKey = process.env.MY_PRIVATE_KEY;
+
+    // If we weren't able to grab it, we should throw a new error, otherwise you should see a "Success!" message
+
+    if (!myAccountId || !myPrivateKey) {
+        throw new Error("Environment variables MY_ACCOUNT_ID and MY_PRIVATE_KEY must be present");
+    } else {
+        console.log("Success!"); 
+    }
+}
+    //Remember to invoke your function!
+
+main();
+
+I’ve commented out each line to help explain what everything does. Once you’ve gotten all that code into your index.js file, you can go ahead and run the program. 
+
+  node index.js
+
+Your console should read “Success!” If it doesn’t, you may have configured your .env file incorrectly! Double check that you’ve followed all of the steps accurately. 
+
+
+Now that our .env file is up and running, let’s go ahead and set up a new Hedera Test client. This is going to be a new connection to the Hedera Test Network that leverages your account credentials. You can delete the IF statement from your original code and replace it with the following: 
+
+// Create our connection to the Hedera network
+
+const client = Client.forTestnet();
+
+// Sets your account credentials as the owner of the connection
+
+client.setOperator(myAccountId, myPrivateKey);
+
+This will establish your connection with the Hedera Network! Now let’s start testing out some concepts by adding some more functionality to our program. 
+Programmatically Create a New Account
+
+Now that we have an established connection with the Hedera Test Network, let’s create a new account that we can interact with. You can do this programmatically with the following code: 
+
